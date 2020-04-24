@@ -97,7 +97,7 @@ int InnerProduct_vulkan::create_pipeline(const Option& opt)
     std::vector<vk_specialization_type> specializations(4 + 10);
     specializations[0].i = bias_term;
     specializations[1].i = activation_type;
-    specializations[2].f = activation_params.w == 1 ? activation_params[0] : 0.f;
+    specializations[2].f = activation_params.w >= 1 ? activation_params[0] : 0.f;
     specializations[3].f = activation_params.w == 2 ? activation_params[1] : 0.f;
     specializations[4 + 0].i = shape_flatten_packed.dims;
     specializations[4 + 1].i = shape_flatten_packed.w;
@@ -306,7 +306,7 @@ int InnerProduct_vulkan::forward(const VkMat& bottom_blob, VkMat& top_blob, VkCo
         if (out_elempack == 1) out_elemsize = 4u;
     }
 
-    top_blob.create(num_output / out_elempack, out_elemsize, out_elempack, opt.blob_vkallocator, opt.staging_vkallocator);
+    top_blob.create(num_output / out_elempack, out_elemsize, out_elempack, opt.blob_vkallocator);
     if (top_blob.empty())
         return -100;
 
